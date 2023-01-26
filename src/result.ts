@@ -1,7 +1,7 @@
-abstract class ResultImplementor<T> {
-  constructor(private value: T) {}
+abstract class ResultImplementor<T, E> {
+  constructor(private value: T | E) {}
 
-  private get(): T {
+  private get(): T | E {
     return this.value;
   }
 
@@ -11,7 +11,7 @@ abstract class ResultImplementor<T> {
   }
 
   public is_ok_and(predicate: (value: T) => boolean): boolean {
-    return this.is_ok() && predicate(this.get());
+    return this.is_ok() && predicate(this.get() as T);
   }
 
   public is_err(): boolean {
@@ -19,42 +19,42 @@ abstract class ResultImplementor<T> {
     return this instanceof ResultErr;
   }
 
-  public is_err_and(predicate: (value: T) => boolean): boolean {
-    return this.is_err() && predicate(this.get());
+  public is_err_and(predicate: (value: E) => boolean): boolean {
+    return this.is_err() && predicate(this.get() as E);
   }
 
   public expect(msg: string): T {
     if (this.is_err()) throw new Error(msg);
-    return this.get();
+    return this.get() as T;
   }
 
-  public expect_err(msg: string): T {
+  public expect_err(msg: string): E {
     if (this.is_ok()) throw new Error(msg);
-    return this.get();
+    return this.get() as E;
   }
 
   public unwrap(): T {
     if (this.is_err()) throw new Error(`${this.get()}`);
-    return this.get();
+    return this.get() as T;
   }
 
-  public unwrap_err(): T {
+  public unwrap_err(): E {
     if (this.is_ok()) throw new Error(`${this.get()}`);
-    return this.get();
+    return this.get() as E;
   }
 
   public unwrap_or(defaultValue: T): T {
     if (this.is_err()) return defaultValue;
-    return this.get();
+    return this.get() as T;
   }
 
-  public and<U>(result: Result<U, T>): Result<U, T> {
+  public and(result: ResultOk<T> | ResultErr<E>): ResultOk<T> | ResultErr<E> {
     if (this.is_err()) return this;
     if (result.is_err()) return result;
     return result;
   }
-
-  public or<U>(result: Result<T, U>): Result<T, U> {
+  
+  public or(result: ResultOk<T> | ResultErr<E>): ResultOk<T> | ResultErr<E> {
     if (this.is_ok()) return this;
     if (result.is_ok()) return result;
     return result;
@@ -64,15 +64,13 @@ abstract class ResultImplementor<T> {
     return this.is_ok() && this.get() === value;
   }
 
-  public contains_err(value: T): boolean {
+  public contains_err(value: E): boolean {
     return this.is_err() && this.get() === value;
   }
 }
 
-class ResultOk<T> extends ResultImplementor<T> {}
-class ResultErr<T> extends ResultImplementor<T> {}
+class ResultOk<T> extends ResultImplementor<T, unknown> {}
+class ResultErr<E> extends ResultImplementor<unknown, E> {}
 
 export const Ok: <T>(value: T) => ResultOk<T> = (value) => new ResultOk(value);
-export const Err: <T>(value: T) => ResultErr<T> = (value) => new ResultErr(value);
-
-export type Result<O, E> = ResultOk<O> | ResultErr<E>;
+export const Err: <E>(value: E) => ResultErr<E> = (value) => new ResultErr(value);

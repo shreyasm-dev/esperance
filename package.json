@@ -1,6 +1,6 @@
 {
   "name": "esperance",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Rust std utilities, now in JS/TS",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
