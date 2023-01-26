@@ -1,7 +1,7 @@
 abstract class OptionImplementor<T> {
-  constructor(private value: T) {}
+  constructor(private value: T | null) {}
 
-  private get(): T {
+  private get(): T | null {
     return this.value;
   }
 
@@ -11,7 +11,7 @@ abstract class OptionImplementor<T> {
   }
 
   public is_some_and(predicate: (value: T) => boolean): boolean {
-    return this.is_some() && predicate(this.get());
+    return this.is_some() && predicate(this.get() as T);
   }
 
   public is_none(): boolean {
@@ -19,60 +19,42 @@ abstract class OptionImplementor<T> {
     return this instanceof OptionNone;
   }
 
-  public is_none_and(predicate: (value: T) => boolean): boolean {
-    return this.is_none() && predicate(this.get());
-  }
-
   public expect(msg: string): T {
     if (this.is_none()) throw new Error(msg);
-    return this.get();
-  }
-
-  public expect_none(msg: string): T {
-    if (this.is_some()) throw new Error(msg);
-    return this.get();
+    return this.get() as T;
   }
 
   public unwrap(): T {
-    if (this.is_none()) throw new Error(`${this.get()}`);
-    return this.get();
-  }
-
-  public unwrap_none(): T {
-    if (this.is_some()) throw new Error(`${this.get()}`);
-    return this.get();
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    if (this.is_none()) throw new Error(`${None}`);
+    return this.get() as T;
   }
 
   public unwrap_or(defaultValue: T): T {
     if (this.is_none()) return defaultValue;
-    return this.get();
+    return this.get() as T;
   }
 
-  public and<U>(option: Option<U, T>): Option<U, T> {
+  public and(option: OptionSome<T> | OptionNone): OptionSome<T> | OptionNone {
     if (this.is_none()) return this;
     if (option.is_none()) return option;
     return option;
   }
 
-  public or<U>(option: Option<T, U>): Option<T, U> {
+  public or(option: OptionSome<T> | OptionNone): OptionSome<T> | OptionNone {
     if (this.is_some()) return this;
     if (option.is_some()) return option;
     return option;
   }
 
   public contains(value: T): boolean {
-    return this.is_some() && this.get() === value;
-  }
-
-  public contains_and(predicate: (value: T) => boolean): boolean {
-    return this.is_some() && predicate(this.get());
+    if (this.is_none()) return false;
+    return this.get() === value;
   }
 }
 
 class OptionSome<T> extends OptionImplementor<T> {}
-class OptionNone<T> extends OptionImplementor<T> {}
+class OptionNone extends OptionImplementor<unknown> {}
 
-export const Some = <T>(value: T): Option<T, never> => new OptionSome(value);
-export const None = (): Option<never, null> => new OptionNone(null);
-
-export type Option<T, U> = OptionSome<T> | OptionNone<U>;
+export const Some = <T>(value: T): OptionSome<T> => new OptionSome(value);
+export const None = new OptionNone(null);

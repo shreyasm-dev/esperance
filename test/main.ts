@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Ok, Err } from '../src/main';
+import { Ok, Err, Some, None } from '../src/main';
 
 describe('Result', () => {
   it('Ok::is_ok', () => {
@@ -86,5 +86,87 @@ describe('Result', () => {
     const result = Err(1);
     expect(result.contains_err(1)).to.be.true;
     expect(result.contains_err(2)).to.be.false;
+  });
+});
+
+describe('Option', () => {
+  it('Some::is_some', () => {
+    const option = Some(1);
+    expect(option.is_some()).to.be.true;
+    expect(option.is_none()).to.be.false;
+  });
+
+  it('None::is_none', () => {
+    const option = None;
+    expect(option.is_some()).to.be.false;
+    expect(option.is_none()).to.be.true;
+  });
+
+  it('Some::is_some_and', () => {
+    const option = Some(1);
+    expect(option.is_some_and((value) => value === 1)).to.be.true;
+    expect(option.is_some_and((value) => value === 2)).to.be.false;
+  });
+
+  it('Some::expect', () => {
+    const option = Some(1);
+    expect(option.expect('error')).to.be.equal(1);
+  });
+
+  it('None::expect', () => {
+    const option = None;
+    expect(() => option.expect('error')).to.throw('error');
+  });
+
+  it('Some::unwrap', () => {
+    const option = Some(1);
+    expect(option.unwrap()).to.be.equal(1);
+  });
+
+  it('None::unwrap', () => {
+    const option = None;
+    expect(() => option.unwrap()).to.throw(`${None}`);
+  });
+
+  it('Some::unwrap_or', () => {
+    const option = Some(1);
+    expect(option.unwrap_or(2)).to.be.equal(1);
+  });
+
+  it('None::unwrap_or', () => {
+    const option = None;
+    expect(option.unwrap_or(2)).to.be.equal(2);
+  });
+
+  it('Some::and', () => {
+    const option = Some(1);
+    expect(option.and(Some(2)).unwrap()).to.be.equal(Some(2).unwrap());
+  });
+
+  it('None::and', () => {
+    const option = None;
+    expect(option.and(Some(2))).to.be.equal(None);
+  });
+
+  it('Some::or', () => {
+    const option = Some(1);
+    expect(option.or(Some(2)).unwrap()).to.be.equal(Some(1).unwrap());
+  });
+
+  it('None::or', () => {
+    const option = None;
+    expect(option.or(Some(2)).unwrap()).to.be.equal(Some(2).unwrap());
+  });
+
+  it('Some::contains', () => {
+    const option = Some(1);
+    expect(option.contains(1)).to.be.true;
+    expect(option.contains(2)).to.be.false;
+  });
+
+  it('None::contains', () => {
+    const option = None;
+    expect(option.contains(1)).to.be.false;
+    expect(option.contains(2)).to.be.false;
   });
 });
