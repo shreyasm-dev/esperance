@@ -5,67 +5,67 @@ abstract class ResultImplementor<T, E> {
     return this.value;
   }
 
-  public is_ok(): boolean {
+  public isOk(): boolean {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     return this instanceof ResultOk;
   }
 
-  public is_ok_and(predicate: (value: T) => boolean): boolean {
-    return this.is_ok() && predicate(this.get() as T);
+  public isOkAnd(predicate: (value: T) => boolean): boolean {
+    return this.isOk() && predicate(this.get() as T);
   }
 
-  public is_err(): boolean {
+  public isErr(): boolean {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     return this instanceof ResultErr;
   }
 
-  public is_err_and(predicate: (value: E) => boolean): boolean {
-    return this.is_err() && predicate(this.get() as E);
+  public isErrAnd(predicate: (value: E) => boolean): boolean {
+    return this.isErr() && predicate(this.get() as E);
   }
 
   public expect(msg: string): T {
-    if (this.is_err()) throw new Error(msg);
+    if (this.isErr()) throw new Error(msg);
     return this.get() as T;
   }
 
-  public expect_err(msg: string): E {
-    if (this.is_ok()) throw new Error(msg);
+  public expectErr(msg: string): E {
+    if (this.isOk()) throw new Error(msg);
     return this.get() as E;
   }
 
   public unwrap(): T {
-    if (this.is_err()) throw new Error(`${this.get()}`);
+    if (this.isErr()) throw new Error(`${this.get()}`);
     return this.get() as T;
   }
 
-  public unwrap_err(): E {
-    if (this.is_ok()) throw new Error(`${this.get()}`);
+  public unwrapErr(): E {
+    if (this.isOk()) throw new Error(`${this.get()}`);
     return this.get() as E;
   }
 
-  public unwrap_or(defaultValue: T): T {
-    if (this.is_err()) return defaultValue;
+  public unwrapOr(defaultValue: T): T {
+    if (this.isErr()) return defaultValue;
     return this.get() as T;
   }
 
   public and(result: ResultOk<T> | ResultErr<E>): ResultOk<T> | ResultErr<E> {
-    if (this.is_err()) return this;
-    if (result.is_err()) return result;
+    if (this.isErr()) return this;
+    if (result.isErr()) return result;
     return result;
   }
   
   public or(result: ResultOk<T> | ResultErr<E>): ResultOk<T> | ResultErr<E> {
-    if (this.is_ok()) return this;
-    if (result.is_ok()) return result;
+    if (this.isOk()) return this;
+    if (result.isOk()) return result;
     return result;
   }
 
   public contains(value: T): boolean {
-    return this.is_ok() && this.get() === value;
+    return this.isOk() && this.get() === value;
   }
 
-  public contains_err(value: E): boolean {
-    return this.is_err() && this.get() === value;
+  public containsErr(value: E): boolean {
+    return this.isErr() && this.get() === value;
   }
 }
 

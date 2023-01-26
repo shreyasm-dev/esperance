@@ -5,50 +5,50 @@ abstract class OptionImplementor<T> {
     return this.value;
   }
 
-  public is_some(): boolean {
+  public isSome(): boolean {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     return this instanceof OptionSome;
   }
 
-  public is_some_and(predicate: (value: T) => boolean): boolean {
-    return this.is_some() && predicate(this.get() as T);
+  public isSomeAnd(predicate: (value: T) => boolean): boolean {
+    return this.isSome() && predicate(this.get() as T);
   }
 
-  public is_none(): boolean {
+  public isNone(): boolean {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     return this instanceof OptionNone;
   }
 
   public expect(msg: string): T {
-    if (this.is_none()) throw new Error(msg);
+    if (this.isNone()) throw new Error(msg);
     return this.get() as T;
   }
 
   public unwrap(): T {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    if (this.is_none()) throw new Error(`${None}`);
+    if (this.isNone()) throw new Error(`${None}`);
     return this.get() as T;
   }
 
-  public unwrap_or(defaultValue: T): T {
-    if (this.is_none()) return defaultValue;
+  public unwrapOr(defaultValue: T): T {
+    if (this.isNone()) return defaultValue;
     return this.get() as T;
   }
 
   public and(option: OptionSome<T> | OptionNone): OptionSome<T> | OptionNone {
-    if (this.is_none()) return this;
-    if (option.is_none()) return option;
+    if (this.isNone()) return this;
+    if (option.isNone()) return option;
     return option;
   }
 
   public or(option: OptionSome<T> | OptionNone): OptionSome<T> | OptionNone {
-    if (this.is_some()) return this;
-    if (option.is_some()) return option;
+    if (this.isSome()) return this;
+    if (option.isSome()) return option;
     return option;
   }
 
   public contains(value: T): boolean {
-    if (this.is_none()) return false;
+    if (this.isNone()) return false;
     return this.get() === value;
   }
 }

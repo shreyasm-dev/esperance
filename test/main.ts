@@ -2,28 +2,28 @@ import { expect } from 'chai';
 import { Ok, Err, Some, None } from '../src/main';
 
 describe('Result', () => {
-  it('Ok::is_ok', () => {
+  it('Ok::isOk', () => {
     const result = Ok(1);
-    expect(result.is_ok()).to.be.true;
-    expect(result.is_err()).to.be.false;
+    expect(result.isOk()).to.be.true;
+    expect(result.isErr()).to.be.false;
   });
 
-  it('Err::is_err', () => {
+  it('Err::isErr', () => {
     const result = Err(1);
-    expect(result.is_ok()).to.be.false;
-    expect(result.is_err()).to.be.true;
+    expect(result.isOk()).to.be.false;
+    expect(result.isErr()).to.be.true;
   });
 
-  it('Ok::is_ok_and', () => {
+  it('Ok::isOkAnd', () => {
     const result = Ok(1);
-    expect(result.is_ok_and((value) => value === 1)).to.be.true;
-    expect(result.is_ok_and((value) => value === 2)).to.be.false;
+    expect(result.isOkAnd((value) => value === 1)).to.be.true;
+    expect(result.isOkAnd((value) => value === 2)).to.be.false;
   });
 
-  it('Err::is_err_and', () => {
+  it('Err::isErrAnd', () => {
     const result = Err(1);
-    expect(result.is_err_and((value) => value === 1)).to.be.true;
-    expect(result.is_err_and((value) => value === 2)).to.be.false;
+    expect(result.isErrAnd((value) => value === 1)).to.be.true;
+    expect(result.isErrAnd((value) => value === 2)).to.be.false;
   });
 
   it('Ok::expect', () => {
@@ -31,7 +31,7 @@ describe('Result', () => {
     expect(result.expect('error')).to.be.equal(1);
   });
 
-  it('Err::expect_err', () => {
+  it('Err::expectErr', () => {
     const result = Err(1);
     expect(() => result.expect('error')).to.throw('error');
   });
@@ -46,14 +46,14 @@ describe('Result', () => {
     expect(() => result.unwrap()).to.throw('1');
   });
 
-  it('Ok::unwrap_or', () => {
+  it('Ok::unwrapOr', () => {
     const result = Ok(1);
-    expect(result.unwrap_or(2)).to.be.equal(1);
+    expect(result.unwrapOr(2)).to.be.equal(1);
   });
 
-  it('Err::unwrap_or', () => {
+  it('Err::unwrapOr', () => {
     const result = Err(1);
-    expect(result.unwrap_or(2)).to.be.equal(2);
+    expect(result.unwrapOr(2)).to.be.equal(2);
   });
 
   it('Ok::and', () => {
@@ -63,7 +63,7 @@ describe('Result', () => {
 
   it('Err::and', () => {
     const result = Err(1);
-    expect(result.and(Ok(2)).unwrap_err()).to.be.equal(Err(1).unwrap_err());
+    expect(result.and(Ok(2)).unwrapErr()).to.be.equal(Err(1).unwrapErr());
   });
 
   it('Ok::or', () => {
@@ -73,7 +73,7 @@ describe('Result', () => {
 
   it('Err::or', () => {
     const result = Err(1);
-    expect(result.or(Err(2)).unwrap_err()).to.be.equal(Err(2).unwrap_err());
+    expect(result.or(Err(2)).unwrapErr()).to.be.equal(Err(2).unwrapErr());
   });
 
   it('Ok::contains', () => {
@@ -82,30 +82,30 @@ describe('Result', () => {
     expect(result.contains(2)).to.be.false;
   });
 
-  it('Err::contains_err', () => {
+  it('Err::containsErr', () => {
     const result = Err(1);
-    expect(result.contains_err(1)).to.be.true;
-    expect(result.contains_err(2)).to.be.false;
+    expect(result.containsErr(1)).to.be.true;
+    expect(result.containsErr(2)).to.be.false;
   });
 });
 
 describe('Option', () => {
-  it('Some::is_some', () => {
+  it('Some::isSome', () => {
     const option = Some(1);
-    expect(option.is_some()).to.be.true;
-    expect(option.is_none()).to.be.false;
+    expect(option.isSome()).to.be.true;
+    expect(option.isNone()).to.be.false;
   });
 
-  it('None::is_none', () => {
+  it('None::isNone', () => {
     const option = None;
-    expect(option.is_some()).to.be.false;
-    expect(option.is_none()).to.be.true;
+    expect(option.isSome()).to.be.false;
+    expect(option.isNone()).to.be.true;
   });
 
-  it('Some::is_some_and', () => {
+  it('Some::isSomeAnd', () => {
     const option = Some(1);
-    expect(option.is_some_and((value) => value === 1)).to.be.true;
-    expect(option.is_some_and((value) => value === 2)).to.be.false;
+    expect(option.isSomeAnd((value) => value === 1)).to.be.true;
+    expect(option.isSomeAnd((value) => value === 2)).to.be.false;
   });
 
   it('Some::expect', () => {
@@ -128,14 +128,14 @@ describe('Option', () => {
     expect(() => option.unwrap()).to.throw(`${None}`);
   });
 
-  it('Some::unwrap_or', () => {
+  it('Some::unwrapOr', () => {
     const option = Some(1);
-    expect(option.unwrap_or(2)).to.be.equal(1);
+    expect(option.unwrapOr(2)).to.be.equal(1);
   });
 
-  it('None::unwrap_or', () => {
+  it('None::unwrapOr', () => {
     const option = None;
-    expect(option.unwrap_or(2)).to.be.equal(2);
+    expect(option.unwrapOr(2)).to.be.equal(2);
   });
 
   it('Some::and', () => {
